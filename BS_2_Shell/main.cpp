@@ -14,7 +14,7 @@
 #define MAXLINE 100
 #define MOD "exit with CTR C"
 
-// Test 123
+// Hier neue Version
 int read_command(std::string &command, std::vector<std::string> &parameters) { // prompt for user input and read a command line
     
     //fprintf(stdout, "$ ");
