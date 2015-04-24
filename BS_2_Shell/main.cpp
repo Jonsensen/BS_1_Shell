@@ -113,6 +113,7 @@ int main(int argc, char *argv[]) {
           
            status= execvp(const_cast<char*>(command.c_str()),const_cast<char**>(params.data())); // executes command // Buggy
             params.clear();
+            parameters.clear();
             
             exit(3);
         } else { // father
@@ -124,7 +125,7 @@ int main(int argc, char *argv[]) {
         
         // Display Status
         if (WIFEXITED(status)){
-          //  std::cout <<"Kind wurde normal beendet. Status : "<<WEXITSTATUS(status)<<std::endl;
+            std::cout <<"Kind wurde normal beendet. Status : "<<WEXITSTATUS(status)<<std::endl;
         }
         
         else if (WIFSIGNALED(status)){
