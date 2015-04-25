@@ -14,6 +14,7 @@
 #define MAXLINE 100
 #define MOD "exit with CTR C"
 
+// Das heir ist 0.2 version ..
 void ctrcHandler(int sig)
 {
     std::cout <<"CTR C wurde gedrückt !"<<std::endl;
@@ -34,14 +35,14 @@ int read_command(std::string &command, std::vector<std::string> &parameters) { /
     
     parameters.clear(); // ?!
     
-    parameters.push_back(command);
+    parameters.push_back(command.c_str());
     
     while (ss.good()) {
         ss>>tmpString;
         parameters.push_back(tmpString.c_str());
         }
     
-    return(0); // still not working
+    return(0); // ?
 } // read_command
 
 int main(int argc, char *argv[]) {
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]) {
     int noParams;
     std::vector<const char *> params;
     
-   signal(SIGINT, ctrcHandler); // Funktioniert noch nicht..
+   signal(SIGINT, ctrcHandler); // Funktioniert noch nicht.. ?!
     
     while (1) {
         noParams = read_command(command, parameters); // read user input
@@ -61,29 +62,20 @@ int main(int argc, char *argv[]) {
         }
         
         
-    /*    //   /*Testoutput
+     // /*Testoutput
         for (int i=0; i<parameters.size(); i++) {
             std::cout<<"parameters an stelle "<<i<<parameters[i]<<std::endl;
         }
-      */
+      
         
-      /*  if(params.size()>0){
-            for (int x=0; x<params.size();x++)
-            {
-        params.pop_back();
-            }
-        }
-       */
         params.clear();
-     
         
         // Kopiere Parameter in const *char vector
         for (int i=0; i<parameters.size(); i++) {
             params.push_back(parameters[i].c_str());
             
          }
-        
-        
+        params.push_back(NULL); // ?! Hier problem befehl wird gar nicht aufgerufen
         
         /*Testoutput
         for (int i=0; i<params.size(); i++) {
@@ -100,7 +92,8 @@ int main(int argc, char *argv[]) {
           //  std::cout<<"1 sek warten"<<std::endl;
           //  sleep(1); // 1 sek sleep for test
             
-         /* // Child Testoutput
+            
+          // Child Testoutput
             for (int i=0; i<params.size(); i++) {
                 std::cout<<"params in Kind an stelle "<<i<<params[i]<<std::endl;
             }
@@ -109,9 +102,12 @@ int main(int argc, char *argv[]) {
             //char ** test12 =const_cast<char**>(params.data());
             
             //std::cout<<"test12 ohne const: "<<*test12<<std::endl;
-           */
           
-           status= execvp(const_cast<char*>(command.c_str()),const_cast<char**>(params.data())); // executes command // Buggy
+          
+            // Buggy: Nach ausführen von Befehl mit >0 Parametern buggt der nächte Befehl, obwohl params
+         //  status= execvp(const_cast<char*>(command.c_str()),const_cast<char**>(params.data())); // executes command
+          status= execvp(const_cast<char*>(params[0]),const_cast<char**>(&params.front())); // executes command
+            
             params.clear();
             parameters.clear();
             
@@ -136,10 +132,7 @@ int main(int argc, char *argv[]) {
             std::cout<<"Kind wurde gerade gestoppt. Status : "<<WEXITSTATUS(status)<<" Signalnr: "<<WSTOPSIG(status)<<std::endl;
         }
         
-        
-        
-        
-       // exit(0);
+    // exit(0);
         
     }// end while(1)
     
@@ -147,5 +140,4 @@ int main(int argc, char *argv[]) {
     //    close(fd); // ??
    // exit(0);
 }
-
 
