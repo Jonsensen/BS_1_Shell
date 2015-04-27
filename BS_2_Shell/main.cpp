@@ -18,9 +18,11 @@
 int read_command(char *command, char *parameters[]) { // prompt for user input and read a command line
     fprintf(stdout, "$ ");
    // Hier Auslagern
+   
+    
+    
     return 0;
 } // read_command
-
 
 
 int main(int argc, char *argv[])
@@ -29,18 +31,28 @@ int main(int argc, char *argv[])
     int childPid;
     int status;
     //char command[MAXLINE];
-    char wholeLine[MAXLINE];
+    
    // char *parameters[MAXLINE];
-   // int noParams; // wird gebraucht, wenn read_command ausgeladgert ist
+    int noParams; // wird gebraucht, wenn read_command ausgeladgert ist
+    
+    char* command;
+    char** parameters;
+    
     
     while (true)
     {
+        
+        //noParams=read_command(command, parameters);
+        
+       // Von hier auslagern
+        char wholeLine[MAXLINE];
         // Ausgabe aktueller Pfad hier einfügen..
         std::cout<<"$";
         std::cin.getline( wholeLine, MAXLINE );
         // String zerlegen und in args schreiben:
         std::vector<char*> args;
-        char* command = strtok( wholeLine, " " );
+        //char* command = strtok( wholeLine, " " );
+        command= strtok( wholeLine, " " );
         char* tmp = command;
         while ( tmp != NULL )
         {
@@ -49,16 +61,18 @@ int main(int argc, char *argv[])
         }
         
         // vector args in parameters kopieren
-        char** parameters = new char*[args.size()+1];
+        // char** parameters = new char*[args.size()+1];
+        parameters=new char*[args.size()+1];
         
         for ( int i = 0; i < args.size(); i++ )
             parameters[i] = args[i];
         
         parameters[args.size()] = NULL; // Nullterminieren
+        // Bis hier auslagern!
+
         
-        
-        /* Implementation von cd Befehelen
-            if (!strcmp (prog, "cd"))
+       //  Implementation von cd Befehelen -> Weil cd kein ausführbarer Befehl ist
+            if (!strcmp (command, "cd"))
             {
                 if (argv[1] == NULL)
                 {
@@ -68,8 +82,8 @@ int main(int argc, char *argv[])
                 {
                     chdir (argv[1]);
                 }
-                perror (command);
-            */
+            }
+        
         
         if ((childPid = fork()) == -1) { // create process
             fprintf(stderr, "can't fork!\n");
