@@ -28,29 +28,31 @@ int main(int argc, char *argv[])
     
     int childPid;
     int status;
-    char command[MAXLINE];
+    //char command[MAXLINE];
+    char wholeLine[MAXLINE];
    // char *parameters[MAXLINE];
-    int noParams;
+   // int noParams; // wird gebraucht, wenn read_command ausgeladgert ist
     
-    while ( true )
+    while (true)
     {
         // Ausgabe aktueller Pfad hier einfügen..
         std::cout<<"$";
-        std::cin.getline( command, MAXLINE );
-        
+        std::cin.getline( wholeLine, MAXLINE );
+        // String zerlegen und in args schreiben:
         std::vector<char*> args;
-        char* prog = strtok( command, " " );
-        char* tmp = prog;
+        char* command = strtok( wholeLine, " " );
+        char* tmp = command;
         while ( tmp != NULL )
         {
             args.push_back( tmp );
             tmp = strtok( NULL, " " );
         }
         
-                char** parameters = new char*[args.size()+1];
+        // vector args in parameters kopieren
+        char** parameters = new char*[args.size()+1];
         
-            for ( int k = 0; k < args.size(); k++ )
-            parameters[k] = args[k];
+        for ( int i = 0; i < args.size(); i++ )
+            parameters[i] = args[i];
         
         parameters[args.size()] = NULL; // Nullterminieren
         
@@ -77,17 +79,17 @@ int main(int argc, char *argv[])
         
         else if (childPid == 0) { // child process
             //std::cout<<"Im Kind !"<<std::endl;
-            execvp(prog, parameters); // executes command
+            execvp(command, parameters); // executes command
             exit(3);
         }
 
         else { // Vater
             //std::cout<<"Im Vater"<<std::endl;
-        waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
+            waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
         }
         
         
-    }
+    }// Ende while(true)
     
     return 0;
 }
