@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     int childPid;
     int status;
     char command[MAXLINE];
-    char *parameters[MAXLINE];
+   // char *parameters[MAXLINE];
     int noParams;
     
     while ( true )
@@ -47,11 +47,12 @@ int main(int argc, char *argv[])
             tmp = strtok( NULL, " " );
         }
         
-        char** argv = new char*[args.size()+1];
-        for ( int k = 0; k < args.size(); k++ )
-            argv[k] = args[k];
+                char** parameters = new char*[args.size()+1];
         
-        argv[args.size()] = NULL; // Nullterminieren
+            for ( int k = 0; k < args.size(); k++ )
+            parameters[k] = args[k];
+        
+        parameters[args.size()] = NULL; // Nullterminieren
         
         
         /* Implementation von cd Befehelen
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
         
         else if (childPid == 0) { // child process
             //std::cout<<"Im Kind !"<<std::endl;
-            execvp(prog, argv); // executes command
+            execvp(prog, parameters); // executes command
             exit(3);
         }
 
