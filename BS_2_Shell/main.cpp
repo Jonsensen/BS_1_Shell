@@ -74,13 +74,13 @@ int main(int argc, char *argv[])
        //  Implementation von cd Befehelen -> Weil cd kein ausführbarer Befehl ist
             if (!strcmp (command, "cd"))
             {
-                if (argv[1] == NULL)
+                if (parameters[1] == NULL)
                 {
                     chdir ("/");
                 }
                 else
                 {
-                    chdir (argv[1]);
+                    chdir (parameters[1]);
                 }
             }
         
