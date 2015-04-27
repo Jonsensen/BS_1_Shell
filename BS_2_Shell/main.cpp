@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
             argv[k] = args[k];
         
         argv[args.size()] = NULL;
-        // Soweit
-        if ( strcmp( command, "exit" ) == 0 )
+        
+        if ( strcmp( command, "exit" ) == 0 ) //  Hier abbruch mit exit
         {
             return 0;
         }
