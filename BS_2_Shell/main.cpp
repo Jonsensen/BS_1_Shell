@@ -12,12 +12,12 @@
 #include <vector>
 #include <iostream>
 #define MAXLINE 100
-#define MOD "exit with CTR C"
-using namespace std;
+#define MOD "exit with CTR C" // Noch nicht Implementiert...
+
 
 int read_command(char *command, char *parameters[]) { // prompt for user input and read a command line
     fprintf(stdout, "$ ");
-   // ...
+   // Hier Auslagern
     return 0;
 } // read_command
 
@@ -32,17 +32,13 @@ int main(int argc, char *argv[])
     char *parameters[MAXLINE];
     int noParams;
     
-    
     while ( true )
     {
-        // Show prompt.
-        //      cout << get_current_dir_name () << "$ " ;
+        // Ausgabe aktueller Pfad hier einfügen..
+        std::cout<<"$";
+        std::cin.getline( command, MAXLINE );
         
-        cout<<"$";
-        char command[MAXLINE];
-        cin.getline( command, MAXLINE );
-        
-        vector<char*> args;
+        std::vector<char*> args;
         char* prog = strtok( command, " " );
         char* tmp = prog;
         while ( tmp != NULL )
@@ -55,14 +51,10 @@ int main(int argc, char *argv[])
         for ( int k = 0; k < args.size(); k++ )
             argv[k] = args[k];
         
-        argv[args.size()] = NULL;
+        argv[args.size()] = NULL; // Nullterminieren
         
-        if ( strcmp( command, "exit" ) == 0 ) //  Hier abbruch mit exit
-        {
-            return 0;
-        }
-        else
-        {
+        
+        /* Implementation von cd Befehelen
             if (!strcmp (prog, "cd"))
             {
                 if (argv[1] == NULL)
@@ -74,39 +66,26 @@ int main(int argc, char *argv[])
                     chdir (argv[1]);
                 }
                 perror (command);
-            }
-            else
-            {
-                pid_t kidpid = fork();
-                
-                if (kidpid < 0)
-                {
-                    perror( "Internal error: cannot fork." );
-                    return -1;
-                }
-                else if (kidpid == 0)
-                {
-                    // I am the child.
-                   status=execvp (prog, argv);
-                    
-                    // The following lines should not happen (normally).
-                    perror( command );
-                    return -1;
-                }
-                else
-                {
-                    waitpid(kidpid, &status, WUNTRACED | WCONTINUED);
-                    // I am the parent.  Wait for the child.
-                  /*
-                    if ( waitpid( kidpid, 0, 0 ) < 0 )
-                    {
-                        perror( "Internal error: cannot wait for child." );
-                        return -1;
-                    }
-                   */
-                }
-            }
+            */
+        
+        if ((childPid = fork()) == -1) { // create process
+            fprintf(stderr, "can't fork!\n");
+            exit(3);
         }
+        
+        
+        else if (childPid == 0) { // child process
+            //std::cout<<"Im Kind !"<<std::endl;
+            execvp(prog, argv); // executes command
+            exit(3);
+        }
+
+        else { // Vater
+            //std::cout<<"Im Vater"<<std::endl;
+        waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
+        }
+        
+        
     }
     
     return 0;
