@@ -1,5 +1,3 @@
-
-//#include <sys/types.h>  // type definitions, e.g., pid_t
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstdlib>
@@ -14,12 +12,12 @@
 #define MAXLINE 100
 #define MOD "exit with CTR C" // Noch nicht Implementiert...
 
-
-int read_command(char *command, char *parameters[]) { // prompt for user input and read a command line
+int read_command(char* (&command),char** (&parameters)) { // prompt for user input and read a command line
     fprintf(stdout, "$ ");
    // Hier Auslagern
-   
     
+
+   
     
     return 0;
 } // read_command
@@ -35,16 +33,16 @@ int main(int argc, char *argv[])
    // char *parameters[MAXLINE];
     int noParams; // wird gebraucht, wenn read_command ausgeladgert ist
     
-    char* command;
-    char** parameters;
+    char* command=nullptr;
+    char** parameters=nullptr;
     
     
     while (true)
     {
         
-        //noParams=read_command(command, parameters);
         
-       // Von hier auslagern
+        
+        // Von hier auslagern
         char wholeLine[MAXLINE];
         // Ausgabe aktueller Pfad hier einfügen..
         std::cout<<"$";
@@ -68,22 +66,27 @@ int main(int argc, char *argv[])
             parameters[i] = args[i];
         
         parameters[args.size()] = NULL; // Nullterminieren
+        
+        
+        
+        //  Implementation von cd Befehelen -> Weil cd kein ausführbarer Befehl ist
+        if (!strcmp (command, "cd"))
+        {
+            if (parameters[1] == NULL)
+            {
+                chdir ("/");
+            }
+            else
+            {
+                chdir (parameters[1]);
+            }
+        }
+        
         // Bis hier auslagern!
 
         
-       //  Implementation von cd Befehelen -> Weil cd kein ausführbarer Befehl ist
-            if (!strcmp (command, "cd"))
-            {
-                if (parameters[1] == NULL)
-                {
-                    chdir ("/");
-                }
-                else
-                {
-                    chdir (parameters[1]);
-                }
-            }
         
+        //noParams=read_command(command, parameters);
         
         if ((childPid = fork()) == -1) { // create process
             fprintf(stderr, "can't fork!\n");
