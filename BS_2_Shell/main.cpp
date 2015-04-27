@@ -1,90 +1,86 @@
-#include <unistd.h>
-#include <sys/wait.h>
-#include <cstdlib>
-#include <sys/stat.h>				// open()
-#include <signal.h>				// signal()
-#include <fcntl.h>				// open()
-#include <stdio.h>				// printf(), ...
-#include <time.h>				// time(), ...
-#include <string.h>				// strtok()
+#include <unistd.h>     // getpid(), getcwd()
+#include <sys/types.h>  // type definitions, e.g., pid_t
+#include <sys/wait.h>   // wait()
+#include <signal.h>     // signal name constants and kill()
 #include <iostream>
-#include <sstream>
 #include <vector>
-#define MAXLINE 100
-#define MOD "exit with CTR C"
+#include <string>
+using namespace std;
 
 
-
-
-int read_command(char *command, char *parameters[]) { // prompt for user input and read a command line
-    fprintf(stdout, "$ ");
-    
-    char wholeLine[MAXLINE];
-    
-    std::cin.getline(wholeLine,MAXLINE);
-  
-    std::vector<char*>args;
-    
-    //char* prog= strtok(command, " ");
-    command=strtok(wholeLine," "); // Hier anders !!!
-    char* tmp= command;
-    while(tmp!=NULL){
-        args.push_back(tmp);
-        tmp=strtok(NULL, " ");
+int main()
+{
+    while ( true )
+    {
+        // Show prompt.
+        //      cout << get_current_dir_name () << "$ " ;
+        cout<<"$";
+        char command[128];
+        cin.getline( command, 128 );
+        
+        vector<char*> args;
+        char* prog = strtok( command, " " );
+        char* tmp = prog;
+        while ( tmp != NULL )
+        {
+            args.push_back( tmp );
+            tmp = strtok( NULL, " " );
+        }
+        
+        char** argv = new char*[args.size()+1];
+        for ( int k = 0; k < args.size(); k++ )
+            argv[k] = args[k];
+        
+        argv[args.size()] = NULL;
+        // Soweit
+        if ( strcmp( command, "exit" ) == 0 )
+        {
+            return 0;
+        }
+        else
+        {
+            if (!strcmp (prog, "cd"))
+            {
+                if (argv[1] == NULL)
+                {
+                    chdir ("/");
+                }
+                else
+                {
+                    chdir (argv[1]);
+                }
+                perror (command);
+            }
+            else
+            {
+                pid_t kidpid = fork();
+                
+                if (kidpid < 0)
+                {
+                    perror( "Internal error: cannot fork." );
+                    return -1;
+                }
+                else if (kidpid == 0)
+                {
+                    // I am the child.
+                    execvp (prog, argv);
+                    
+                    // The following lines should not happen (normally).
+                    perror( command );
+                    return -1;
+                }
+                else
+                {
+                    // I am the parent.  Wait for the child.
+                    if ( waitpid( kidpid, 0, 0 ) < 0 )
+                    {
+                        perror( "Internal error: cannot wait for child." );
+                        return -1;
+                    }
+                }
+            }
+        }
     }
-    // argv = parameters
     
-    parameters=new char*[args.size()+1];
-    for (int i=0; i<args.size(); i++) {
-        parameters[i]=args[i];
-       }
-    
-     parameters[args.size()]=NULL;
-   
-  
-    /*
-    std::string tmpStr=command;
-    std::stringstream tmpStream(tmpStr);
- */
-    
-    
-    
-    return 0;
-} // read_command
-
-int main(int argc, char *argv[]) {
-    int childPid;
-    int status;
-    char command[MAXLINE];
-    char *parameters[MAXLINE];
-    int noParams;
-    while (1) {
-        
-        noParams = read_command(command, parameters); // read user input
-        std::cout<<parameters<<std::endl;
-        std::cout<<command<<std::endl;
-        if ((childPid = fork()) == -1) { // create process
-            fprintf(stderr, "can't fork!\n");
-            exit(3);
-        }
-        
-        else if (childPid == 0) { // child process
-            std::cout<<"Im Kind"<<std::endl;
-            std::cout<<*parameters<<std::endl;
-            std::cout<<command<<std::endl;
-            
-           //status= execvp(parameters[0], parameters); // executes command
-            status=execvp(command,parameters);
-        
-            exit(3);
-        }
-        
-        else { // father
-            waitpid(childPid, &status, WUNTRACED | WCONTINUED);
-        }
-    }
-    
-  //  close(fd);
-    //exit(0);
     return 0;
 }
