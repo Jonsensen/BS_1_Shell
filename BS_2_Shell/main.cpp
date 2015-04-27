@@ -12,6 +12,26 @@
 #define MAXLINE 100
 #define MOD "exit with CTR C" // Noch nicht Implementiert...
 
+
+void printDisplayStatus(int status){
+
+    
+    // Display Status
+    if (WIFEXITED(status)){
+        std::cout <<"Kind wurde normal beendet. Status : "<<WEXITSTATUS(status)<<std::endl;
+    }
+    
+    else if (WIFSIGNALED(status)){
+        std::cout<<"Kind wurde nicht norrmal beendet. Status : "<<WTERMSIG(status)<<std::endl;
+    }
+    
+    else if (WIFSTOPPED(status)){
+        std::cout<<"Kind wurde gerade gestoppt. Status : "<<WEXITSTATUS(status)<<" Signalnr: "<<WSTOPSIG(status)<<std::endl;
+    }
+
+    
+}
+
 int read_command(char* (&command),char** (&parameters)) { // prompt for user input and read a command line
     fprintf(stdout, "$ ");
    // Hier Auslagern
@@ -104,6 +124,11 @@ int main(int argc, char *argv[])
             //std::cout<<"Im Vater"<<std::endl;
             waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
         }
+        
+        
+        printDisplayStatus(status);
+        
+
         
         
     }// Ende while(true)
