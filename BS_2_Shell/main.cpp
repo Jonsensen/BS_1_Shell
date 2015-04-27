@@ -1,22 +1,46 @@
-#include <unistd.h>     // getpid(), getcwd()
-#include <sys/types.h>  // type definitions, e.g., pid_t
-#include <sys/wait.h>   // wait()
-#include <signal.h>     // signal name constants and kill()
-#include <iostream>
+
+//#include <sys/types.h>  // type definitions, e.g., pid_t
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstdlib>
+#include <sys/stat.h>				// open()
+#include <signal.h>				// signal()
+#include <fcntl.h>				// open()
+#include <stdio.h>				// printf(), ...
+#include <time.h>				// time(), ...
+#include <string.h>				// strtok()
 #include <vector>
-#include <string>
+#include <iostream>
+#define MAXLINE 100
+#define MOD "exit with CTR C"
 using namespace std;
 
+int read_command(char *command, char *parameters[]) { // prompt for user input and read a command line
+    fprintf(stdout, "$ ");
+   // ...
+    return 0;
+} // read_command
 
-int main()
+
+
+int main(int argc, char *argv[])
 {
+    
+    int childPid;
+    int status;
+    char command[MAXLINE];
+    char *parameters[MAXLINE];
+    int noParams;
+    
+    
     while ( true )
     {
         // Show prompt.
         //      cout << get_current_dir_name () << "$ " ;
+        
         cout<<"$";
-        char command[128];
-        cin.getline( command, 128 );
+        char command[MAXLINE];
+        cin.getline( command, MAXLINE );
         
         vector<char*> args;
         char* prog = strtok( command, " " );
@@ -63,7 +87,7 @@ int main()
                 else if (kidpid == 0)
                 {
                     // I am the child.
-                    execvp (prog, argv);
+                   status=execvp (prog, argv);
                     
                     // The following lines should not happen (normally).
                     perror( command );
@@ -71,12 +95,15 @@ int main()
                 }
                 else
                 {
+                    waitpid(kidpid, &status, WUNTRACED | WCONTINUED);
                     // I am the parent.  Wait for the child.
+                  /*
                     if ( waitpid( kidpid, 0, 0 ) < 0 )
                     {
                         perror( "Internal error: cannot wait for child." );
                         return -1;
                     }
+                   */
                 }
             }
         }
