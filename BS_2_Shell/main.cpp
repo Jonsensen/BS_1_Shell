@@ -9,8 +9,26 @@
 #include <string.h>				// strtok()
 #include <vector>
 #include <iostream>
+#include <fstream>
 #define MAXLINE 100
 #define MOD "exit with CTR C" // Noch nicht Implementiert...
+
+// Funktioniert noch nicht ?!
+void writeLog(char command[]){
+
+    std::fstream logFile;
+    logFile.open("log.txt",std::ios::out);
+    
+    if (logFile.is_open()){
+    logFile.open ("log.txt");
+    //logFile << command;
+    logFile <<"Test";
+    logFile.close();
+    }
+    else
+        std::cout<<"Problem beim oeffnen von log.txt"<<std::endl;
+    
+}
 
 
 void printDisplayStatus(int status){
@@ -37,6 +55,7 @@ int read_command(char* (&command),char** (&parameters)) { // prompt for user inp
    // Hier Auslagern
     
 
+    
    
     
     return 0;
@@ -60,13 +79,12 @@ int main(int argc, char *argv[])
     while (true)
     {
         
-        
-        
         // Von hier auslagern
         char wholeLine[MAXLINE];
         // Ausgabe aktueller Pfad hier einfügen..
         std::cout<<"$";
         std::cin.getline( wholeLine, MAXLINE );
+        writeLog(wholeLine);
         // String zerlegen und in args schreiben:
         std::vector<char*> args;
         //char* command = strtok( wholeLine, " " );
@@ -90,6 +108,7 @@ int main(int argc, char *argv[])
         
         
         //  Implementation von cd Befehelen -> Weil cd kein ausführbarer Befehl ist
+        // Bei wechseln in verzeichnis Fehleranzeige, weil in execvp ausgeführt -> fixen
         if (!strcmp (command, "cd"))
         {
             if (parameters[1] == NULL)
@@ -99,6 +118,7 @@ int main(int argc, char *argv[])
             else
             {
                 chdir (parameters[1]);
+                delete parameters;
             }
         }
         
@@ -128,7 +148,6 @@ int main(int argc, char *argv[])
         
         printDisplayStatus(status);
         
-
         
         
     }// Ende while(true)
