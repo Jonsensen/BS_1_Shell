@@ -14,6 +14,8 @@
 #define MAXLINE 100
 #define MOD "exit with CTR C"
 
+bool isinBackground;
+
 // Zum Beenden mit CTR C
 void handler(int s) {
     char choice;
@@ -33,8 +35,8 @@ void handler(int s) {
 void writeLog(char command[]){
 
     std::ofstream logFile;
-    logFile.open("log.txt",std::ios::app | std::ios::out);
-    
+    logFile.open("log.txt",std::ios::out);
+
     if (logFile.is_open()){
     logFile.open ("log.txt");
     //logFile << command;
@@ -93,17 +95,33 @@ int main(int argc, char *argv[])
     
     while (true)
     {
+        isinBackground=false;
         
         // Von hier auslagern
         char wholeLine[MAXLINE];
         // Ausgabe aktueller Pfad hier einfügen..
         std::cout<<"$";
         std::cin.getline( wholeLine, MAXLINE );
+        
+        
+      
+      /*
+        // Prüfen ob & in Befehl -> Prozess in Hintergrund
+        std::string und = "&";
+        std::string testString = wholeLine;
+        std:: size_t found = testString.find(und);
+        if (found!=std::string::npos){
+            std::cout <<"Es wurde ein und Zeichen gefunden!"<<std::endl;
+            isinBackground=true;
+    
+        }
+       */
+        
         writeLog(wholeLine);
         // String zerlegen und in args schreiben:
         std::vector<char*> args;
         //char* command = strtok( wholeLine, " " );
-        command= strtok( wholeLine, " " );
+        command= strtok( wholeLine, " ");
         char* tmp = command;
         while ( tmp != NULL )
         {
@@ -111,14 +129,17 @@ int main(int argc, char *argv[])
             tmp = strtok( NULL, " " );
         }
         
+        
+    
+        
         // vector args in parameters kopieren
-        // char** parameters = new char*[args.size()+1];
         parameters=new char*[args.size()+1];
         
         for ( int i = 0; i < args.size(); i++ )
             parameters[i] = args[i];
         
         parameters[args.size()] = NULL; // Nullterminieren
+        
         
         
         
@@ -156,11 +177,18 @@ int main(int argc, char *argv[])
 
         else { // Vater
             //std::cout<<"Im Vater"<<std::endl;
+            if(!isinBackground){
             waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
+            }
+          /*  else
+            {
+                waitpid(childPid, &status, WNOHANG);
+                std::cout<<"im Hintergrund hier steht Prozess ID "<<std::endl;
+            }
+            */
         }
         
-        printDisplayStatus(status);
-        
+        //printDisplayStatus(status);
         
         
     }// Ende while(true)
