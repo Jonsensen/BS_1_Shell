@@ -23,13 +23,7 @@ void handler(int) {
 
 
 //Ausgabe des Aktuellen verzeichnisses Funktioniert nicht
-/*
-std::string DirName(std::string source)
-{
-    source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
-    return source;
-}
-*/
+
 
 // Funktioniert noch nicht ?!
 void writeLog(char command[]){
