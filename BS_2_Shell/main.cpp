@@ -12,15 +12,19 @@
 #include <iostream>
 #include <fstream>
 #define MAXLINE 100
-#define MOD "exit with CTR C" // Noch nicht Implementiert...
+#define MOD "exit with CTR C"
 
-// Zum Beenden mit CTR C funktioniert nicht
-void handler(int) {
+// Zum Beenden mit CTR C
+void handler(int s) {
+    char choice;
     std::cout<<"Programm wirklich beenden ? j/n "<<std::endl;
-    //...
+    std::cin>>choice;
+    if (choice=='j'|choice=='J'){
+        exit(0);
+    }
+    
     return;
 }
-
 
 //Ausgabe des Aktuellen verzeichnisses Funktioniert nicht
 
@@ -34,7 +38,7 @@ void writeLog(char command[]){
     if (logFile.is_open()){
     logFile.open ("log.txt");
     //logFile << command;
-    logFile <<"Test";
+    logFile <<"Test"; // Funktioniert nicht. Warum ?
     logFile.close();
     }
     else
@@ -66,7 +70,6 @@ int read_command(char* (&command),char** (&parameters)) { // prompt for user inp
     fprintf(stdout, "$ ");
    // Hier Auslagern
     
-
     
     
     return 0;
@@ -136,7 +139,6 @@ int main(int argc, char *argv[])
         
         // Bis hier auslagern!
 
-        
         
         //noParams=read_command(command, parameters);
         
