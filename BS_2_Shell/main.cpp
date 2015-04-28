@@ -2,6 +2,7 @@
 #include <sys/wait.h>
 #include <cstdlib>
 #include <sys/stat.h>				// open()
+#include <sys/types.h>
 #include <signal.h>				// signal()
 #include <fcntl.h>				// open()
 #include <stdio.h>				// printf(), ...
@@ -13,11 +14,28 @@
 #define MAXLINE 100
 #define MOD "exit with CTR C" // Noch nicht Implementiert...
 
+// Zum Beenden mit CTR C funktioniert nicht
+void handler(int) {
+    std::cout<<"Programm wirklich beenden ? j/n "<<std::endl;
+    //...
+    return;
+}
+
+
+//Ausgabe des Aktuellen verzeichnisses Funktioniert nicht
+/*
+std::string DirName(std::string source)
+{
+    source.erase(std::find(source.rbegin(), source.rend(), '/').base(), source.end());
+    return source;
+}
+*/
+
 // Funktioniert noch nicht ?!
 void writeLog(char command[]){
 
-    std::fstream logFile;
-    logFile.open("log.txt",std::ios::out);
+    std::ofstream logFile;
+    logFile.open("log.txt",std::ios::app | std::ios::out);
     
     if (logFile.is_open()){
     logFile.open ("log.txt");
@@ -56,7 +74,6 @@ int read_command(char* (&command),char** (&parameters)) { // prompt for user inp
     
 
     
-   
     
     return 0;
 } // read_command
@@ -64,7 +81,8 @@ int read_command(char* (&command),char** (&parameters)) { // prompt for user inp
 
 int main(int argc, char *argv[])
 {
-    
+    //chdir(../home/schuette/tmp);
+    signal(SIGINT, handler);
     int childPid;
     int status;
     //char command[MAXLINE];
@@ -72,8 +90,8 @@ int main(int argc, char *argv[])
    // char *parameters[MAXLINE];
     int noParams; // wird gebraucht, wenn read_command ausgeladgert ist
     
-    char* command=nullptr;
-    char** parameters=nullptr;
+    char* command=NULL;
+    char** parameters=NULL;
     
     
     while (true)
@@ -144,7 +162,6 @@ int main(int argc, char *argv[])
             //std::cout<<"Im Vater"<<std::endl;
             waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
         }
-        
         
         printDisplayStatus(status);
         
