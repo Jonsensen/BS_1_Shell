@@ -44,8 +44,6 @@ void handler(int s) {
     return;
 }
 
-//Ausgabe des Aktuellen verzeichnisses Funktioniert nicht
-
 
 // Schreibt alle Befehle in eine log.txt Datei
 void writeLog(char command[]){
@@ -67,8 +65,8 @@ void writeLog(char command[]){
         }
     }
     if ((lseek(fd, 1, SEEK_END)) == -1) { /* set position for reading at end of file */
-        fprintf(stderr, "lssek error\n");
-        exit(1);
+        //fprintf(stderr, "lssek error\n");
+        //exit(1);
     }
     write(fd, str_date, strlen(str_date));
     write(fd, command, strlen(command));
@@ -124,7 +122,7 @@ int main(int argc, char *argv[])
     
     while (true)
     {
-        //printActualDirectory();
+        printActualDirectory();
         isinBackground=false;
         
         // Von hier auslagern
@@ -141,11 +139,10 @@ int main(int argc, char *argv[])
         std::string testString = wholeLine;
         std:: size_t found = testString.find(und);
         if (found!=std::string::npos){
-            std::cout <<"Es wurde ein und Zeichen gefunden!"<<std::endl;
+            //std::cout <<"Es wurde ein und Zeichen gefunden!"<<std::endl;
             isinBackground=true;
         }
        
-        
         
         
         // String zerlegen und in args schreiben:
@@ -171,7 +168,6 @@ int main(int argc, char *argv[])
             parameters[i] = args[i];
         
         parameters[args.size()] = NULL; // Nullterminieren
-        
         
         
         
@@ -213,12 +209,8 @@ int main(int argc, char *argv[])
             waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
             }
             else
-            {
-                //waitpid(childPid,NULL, WNOHANG);
-                std::cout<<"Im Hintergrund ! "<<std::endl;
+            {   // Im Hintergrund
                 std::cout<<childPid<<std::endl;
-                
-                
             }
             
         }
