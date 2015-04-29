@@ -31,20 +31,33 @@ void handler(int s) {
 //Ausgabe des Aktuellen verzeichnisses Funktioniert nicht
 
 
-// Funktioniert noch nicht ?!
+// Schreibt alle Befehle in eine log.txt Datei
 void writeLog(char command[]){
-
-    std::ofstream logFile;
-    logFile.open("log.txt",std::ios::out);
-
-    if (logFile.is_open()){
-    logFile.open ("log.txt");
-    //logFile << command;
-    logFile <<"Test"; // Funktioniert nicht. Warum ?
-    logFile.close();
+    
+    int fd;
+    struct tm *tm;
+    time_t t = time(NULL);
+    //char str_time[100];
+    char str_date[100];
+    
+    //t = time(NULL);
+    tm = localtime(&t);
+    
+    strftime(str_date, sizeof (str_date), "[%a %d %b %Y %H:%M:%S]", tm);
+    
+    if ((fd = open("log.txt", O_RDWR)) < 0) { /* open file */
+        if ((fd = creat("log.txt", 0640)) < 0) {
+            fprintf(stderr, "cannot create log\n");
+            exit(2);
+        }
     }
-    else
-        std::cout<<"Problem beim oeffnen von log.txt"<<std::endl;
+    if ((lseek(fd, 1, SEEK_END)) == -1) { /* set position for reading at end of file */
+        fprintf(stderr, "lssek error\n");
+        exit(1);
+    }
+    write(fd, str_date, strlen(str_date));
+    write(fd, command, strlen(command));
+    write(fd, "\n", 1);
     
 }
 
@@ -105,7 +118,7 @@ int main(int argc, char *argv[])
         
         
       
-      /*
+      
         // Prüfen ob & in Befehl -> Prozess in Hintergrund
         std::string und = "&";
         std::string testString = wholeLine;
@@ -115,7 +128,7 @@ int main(int argc, char *argv[])
             isinBackground=true;
     
         }
-       */
+       
         
         writeLog(wholeLine);
         // String zerlegen und in args schreiben:
@@ -180,12 +193,12 @@ int main(int argc, char *argv[])
             if(!isinBackground){
             waitpid(childPid, &status, WUNTRACED | WCONTINUED); // Warten auf Kind
             }
-          /*  else
+            else
             {
-                waitpid(childPid, &status, WNOHANG);
+                waitpid(childPid,NULL, WNOHANG);
                 std::cout<<"im Hintergrund hier steht Prozess ID "<<std::endl;
             }
-            */
+            
         }
         
         //printDisplayStatus(status);
