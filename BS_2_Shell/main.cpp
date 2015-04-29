@@ -12,9 +12,19 @@
 #include <iostream>
 #include <fstream>
 #define MAXLINE 100
+#define BUFSIZE 200
 #define MOD "exit with CTR C"
 
 bool isinBackground;
+
+
+void printActualDirectory(){
+    
+    char buffer[BUFSIZE];
+    
+    getcwd(buffer, BUFSIZE);
+    printf(" %s", buffer);
+}
 
 // Zum Beenden mit CTR C
 void handler(int s) {
@@ -39,7 +49,6 @@ void writeLog(char command[]){
     time_t t = time(NULL);
     //char str_time[100];
     char str_date[100];
-    
     //t = time(NULL);
     tm = localtime(&t);
     
@@ -47,8 +56,8 @@ void writeLog(char command[]){
     
     if ((fd = open("log.txt", O_RDWR)) < 0) { /* open file */
         if ((fd = creat("log.txt", 0640)) < 0) {
-            fprintf(stderr, "cannot create log\n");
-            exit(2);
+            //fprintf(stderr, "cannot create log\n");
+            //exit(2);
         }
     }
     if ((lseek(fd, 1, SEEK_END)) == -1) { /* set position for reading at end of file */
@@ -81,7 +90,7 @@ void printDisplayStatus(int status){
     
 }
 
-int read_command(char* (&command),char** (&parameters)) { // prompt for user input and read a command line
+int read_command(char* command,char** parameters) { // prompt for user input and read a command line
     fprintf(stdout, "$ ");
    // Hier Auslagern
     
@@ -108,6 +117,7 @@ int main(int argc, char *argv[])
     
     while (true)
     {
+        //printActualDirectory();
         isinBackground=false;
         
         // Von hier auslagern
@@ -115,7 +125,7 @@ int main(int argc, char *argv[])
         // Ausgabe aktueller Pfad hier einfügen..
         std::cout<<"$";
         std::cin.getline( wholeLine, MAXLINE );
-        
+        writeLog(wholeLine);
         
       
       
@@ -126,15 +136,14 @@ int main(int argc, char *argv[])
         if (found!=std::string::npos){
             std::cout <<"Es wurde ein und Zeichen gefunden!"<<std::endl;
             isinBackground=true;
-    
         }
        
         
-        writeLog(wholeLine);
+        
+        
         // String zerlegen und in args schreiben:
         std::vector<char*> args;
-        //char* command = strtok( wholeLine, " " );
-        command= strtok( wholeLine, " ");
+        command= strtok( wholeLine, " &");
         char* tmp = command;
         while ( tmp != NULL )
         {
@@ -142,7 +151,10 @@ int main(int argc, char *argv[])
             tmp = strtok( NULL, " " );
         }
         
-        
+        // löschen von & in vector args
+        if(isinBackground){
+            args.erase(args.begin()+(args.size()-1));
+        }
     
         
         // vector args in parameters kopieren
@@ -195,8 +207,11 @@ int main(int argc, char *argv[])
             }
             else
             {
-                waitpid(childPid,NULL, WNOHANG);
-                std::cout<<"im Hintergrund hier steht Prozess ID "<<std::endl;
+                //waitpid(childPid,NULL, WNOHANG);
+                std::cout<<"Im Hintergrund ! "<<std::endl;
+                std::cout<<childPid<<std::endl;
+                
+                
             }
             
         }
