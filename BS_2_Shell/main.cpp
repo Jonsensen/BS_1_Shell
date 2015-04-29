@@ -18,6 +18,12 @@
 bool isinBackground;
 
 
+void zombie_handler(int sig){
+    
+    while(waitpid(-1,NULL,WNOHANG) > 0 ){};
+    return;
+}
+
 void printActualDirectory(){
     
     char buffer[BUFSIZE];
@@ -104,6 +110,7 @@ int main(int argc, char *argv[])
 {
     //chdir(../home/schuette/tmp);
     signal(SIGINT, handler);
+    signal(SIGCHLD,zombie_handler);
     int childPid;
     int status;
     //char command[MAXLINE];
